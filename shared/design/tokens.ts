@@ -32,10 +32,11 @@ export const Typography = {
         lg: 24,
         xl: 32
     }, 
-    weight: {
-        regular: "400",
-        medium: "500",
-        bold: "600"
+    fonts: {
+        regular: "FiraSansRegular",
+        italic: "FiraSansItalic",
+        semiBold: "FiraSansSemiBold",
+        semiBoldItalic: "FiraSansSemiBoldItalic"
     }
 }
 

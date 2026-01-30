@@ -5,20 +5,20 @@ import {
   PressableProps,
   StyleSheet,
 } from "react-native";
-import { Color } from "../design/tokens";
+import { Color, Typography } from "../design/tokens";
 import { useRef } from "react";
 
 type ButtonProps = {
   title?: string;
   style?: object;
-  isLink?: boolean;
+  asLink?: boolean;
 } & PressableProps;
 
 export default function Button({
   style,
   children,
   title,
-  isLink,
+  asLink,
   onPressIn,
   onPressOut,
   onLongPress,
@@ -26,7 +26,7 @@ export default function Button({
 }: ButtonProps) {
   const colorValue = useRef(new Animated.Value(0)).current;
 
-  const styles = isLink ? stylesLink : stylesDefault;
+  const styles = asLink ? stylesLink : stylesDefault;
 
   const animatedColor = colorValue.interpolate({
     inputRange: [0, 100],
@@ -37,7 +37,7 @@ export default function Button({
     Animated.timing(colorValue, {
       toValue: 100,
       duration: 100,
-      useNativeDriver: !isLink,
+      useNativeDriver: !asLink,
     }).start();
 
     onPressIn && onPressIn(event);
@@ -47,7 +47,7 @@ export default function Button({
     Animated.timing(colorValue, {
       toValue: 0,
       duration: 100,
-      useNativeDriver: !isLink,
+      useNativeDriver: !asLink,
     }).start();
 
     onPressOut && onPressOut(event);
@@ -63,14 +63,14 @@ export default function Button({
       <Animated.View
         style={{
           ...styles.button,
-          ...(!isLink && { backgroundColor: animatedColor }),
+          ...(!asLink && { backgroundColor: animatedColor }),
           ...style,
         }}
       >
         <Animated.Text
           style={{
             ...styles.text,
-            ...(isLink && { color: animatedColor }),
+            ...(asLink && { color: animatedColor }),
           }}
         >
           {title}
@@ -113,6 +113,6 @@ const stylesDefault = StyleSheet.create({
   text: {
     color: Color.white,
     fontSize: 18,
-    fontWeight: 600,
+    fontFamily: Typography.fonts.semiBold
   },
 });

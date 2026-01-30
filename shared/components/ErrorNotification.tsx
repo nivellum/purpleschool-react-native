@@ -94,13 +94,14 @@ export const ErrorNotification = forwardRef<ErrorNotificationRef, ErrorNotificat
 const styles = StyleSheet.create({
     container: {
         position: "absolute",
-        top: 60,
+        top: 0,
         left: 0,
         right: 0,
         backgroundColor: Color.red,
         padding: 10,
     },
     text: {
+        fontFamily: Typography.fonts.regular,
         fontSize: Typography.size.md,
         color: Color.white,
         textAlign: "center",

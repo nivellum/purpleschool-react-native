@@ -1,19 +1,18 @@
 import { useRef, useState } from "react";
-import { Modal } from "./shared/components/Modal";
+import { Modal } from "../shared/components/Modal";
 
+import { StyleSheet, Text, View } from "react-native";
+import Button from "../shared/components/Button";
+import { Color } from "../shared/design/tokens";
+import Logo from "../shared/svg/logos/Logo";
+import Input from "../shared/components/Input";
 import {
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import Button from "./shared/components/Button";
-import { Color } from "./shared/design/tokens";
-import Logo from "./shared/svg/logos/Logo";
-import Input from "./shared/components/Input";
-import { ErrorNotification, ErrorNotificationRef } from "./shared/components/ErrorNotification";
+  ErrorNotification,
+  ErrorNotificationRef,
+} from "../shared/components/ErrorNotification";
+import { Link } from "expo-router";
 
-export default function App() {
-
+export default function Login() {
   const errorNotificationRef = useRef<ErrorNotificationRef>(null);
 
   return (
@@ -22,10 +21,20 @@ export default function App() {
       <View style={styles.formContainer}>
         <Input placeholder="Email" />
         <Input placeholder="Пароль" isPassword={true} />
-        <Button onPress={() => { errorNotificationRef?.current && errorNotificationRef.current.show("Ошибка ".concat(Math.random().toFixed(2).toString())) }} title="Войти" />
+        <Button
+          onPress={() => {
+            errorNotificationRef?.current &&
+              errorNotificationRef.current.show(
+                "Ошибка ".concat(Math.random().toFixed(2).toString()),
+              );
+          }}
+          title="Войти"
+        />
       </View>
       <ErrorNotification ref={errorNotificationRef} />
-      <Button title="Восстановить пароль" isLink={true} />
+      <Link href="/restore" asChild>
+        <Button title="Восстановить пароль" asLink={true} />
+      </Link>
       {/* <Pressable style={styles.restorePasswordButton}>
         <Text style={styles.restorePasswordButtonText}>
           Восстановить пароль
@@ -38,14 +47,11 @@ export default function App() {
   );
 }
 
-const placeholderColor = "#ccc";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Color.background,
     height: "100%",
     gap: 50,
     padding: 55,

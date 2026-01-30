@@ -17,7 +17,7 @@ type InputProps = {
 } & TextInputProps;
 
 export default function Input({ style, isPassword, ...rest }: InputProps) {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((state) => !state);
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     paddingLeft: 25,
     paddingRight: 25,
     borderRadius: 12,
+    fontFamily: Typography.fonts.regular,
     fontSize: Typography.size.md,
   },
   inputPassword: {
