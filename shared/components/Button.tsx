@@ -1,17 +1,21 @@
 import {
+  ActivityIndicator,
   Animated,
   GestureResponderEvent,
   Pressable,
   PressableProps,
   StyleSheet,
+  Text,
 } from "react-native";
 import { Color, Typography } from "../design/tokens";
 import { useRef } from "react";
+import SpinnerIcon from "../svg/icons/SpinnerIcon";
 
 type ButtonProps = {
   title?: string;
   style?: object;
   asLink?: boolean;
+  pending?: boolean;
 } & PressableProps;
 
 export default function Button({
@@ -19,6 +23,8 @@ export default function Button({
   children,
   title,
   asLink,
+  disabled,
+  pending,
   onPressIn,
   onPressOut,
   onLongPress,
@@ -53,28 +59,35 @@ export default function Button({
     onPressOut && onPressOut(event);
   };
 
+  
   return (
     <Pressable
       {...rest}
       style={styles.container}
       onPressIn={onPressInAnimate}
       onPressOut={onPressOutAnimate}
+      disabled={disabled || pending}
     >
       <Animated.View
         style={{
           ...styles.button,
-          ...(!asLink && { backgroundColor: animatedColor }),
+          ...(!asLink && {
+            backgroundColor: disabled || pending ? Color.purpleDark : animatedColor,
+          }),
           ...style,
         }}
       >
-        <Animated.Text
-          style={{
-            ...styles.text,
-            ...(asLink && { color: animatedColor }),
-          }}
-        >
-          {title}
-        </Animated.Text>
+        {pending && <ActivityIndicator color={Color.white} style={{width: 30, height: 30}}/> }
+        {!pending && (
+          <Animated.Text
+            style={{
+              ...styles.text,
+              ...(asLink && { color: animatedColor }),
+            }}
+          >
+            {title}
+          </Animated.Text>
+        )}
       </Animated.View>
     </Pressable>
   );
@@ -88,9 +101,10 @@ const stylesLink = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 15,
+    paddingHorizontal: 15,
     textAlign: "center",
     borderRadius: 12,
+    height: 40
   },
   text: {
     fontSize: 18,
@@ -113,6 +127,6 @@ const stylesDefault = StyleSheet.create({
   text: {
     color: Color.white,
     fontSize: 18,
-    fontFamily: Typography.fonts.semiBold
+    fontFamily: Typography.fonts.semiBold,
   },
 });

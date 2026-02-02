@@ -48,13 +48,10 @@ export default function RootLayout() {
             contentStyle: {
               backgroundColor: Color.background,
               paddingTop: insets.top,
-              //   flex: 1,
-              //   justifyContent: "center",
-              //   alignItems: "center",
             },
           }}
         >
-          <Stack.Screen name="index" />
+          <Stack.Screen name="course/index" />
           <Stack.Screen
             name="login"
             options={{ presentation: "transparentModal" }}

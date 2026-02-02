@@ -1,33 +1,107 @@
-import { useRef, useState } from "react";
-import { Modal } from "../shared/components/Modal";
-
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "../shared/components/Button";
-import { Color } from "../shared/design/tokens";
 import Logo from "../shared/svg/logos/Logo";
 import Input from "../shared/components/Input";
 import {
   ErrorNotification,
   ErrorNotificationRef,
 } from "../shared/components/ErrorNotification";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
+
+import { authAtom, loginAtom } from "../entities/auth/model/auth.state";
+
+import z from "zod";
+import { useAtomValue, useSetAtom } from "jotai";
+
+const initialFormState = {
+  email: "",
+  password: "",
+};
+
+const formDataScheme = z.object({
+  email: z.email("Некорректный e-mail").nonempty("E-mail не может быть пустым"),
+  password: z.string().nonempty("Пароль не может быть пустым"),
+});
+
+type FormData = z.infer<typeof formDataScheme>;
+
+const validate = (
+  formData: FormData,
+): z.core.$ZodErrorTree<Partial<FormData>> | undefined => {
+  const res = formDataScheme.safeParse(formData);
+  if (res.success) return undefined;
+
+  return z.treeifyError(res.error);
+};
 
 export default function Login() {
+  const auth = useAtomValue(authAtom);
+  const login = useSetAtom(loginAtom);
+
   const errorNotificationRef = useRef<ErrorNotificationRef>(null);
+
+  const [userFormData, setUserFormData] = useState<Partial<FormData>>({});
+  const [showErrors, setShowErrors] = useState<Boolean>(false);
+
+  const formData = { ...initialFormState, ...userFormData };
+
+  useEffect(() => {
+    if (auth.error) errorNotificationRef.current?.show(auth.error);
+  }, [auth.error]);
+
+  const setValue = (
+    name: string,
+    value: string | number | undefined | null,
+  ) => {
+    setUserFormData((state) => {
+      return { ...state, [name]: value };
+    });
+  };
+
+  const submit = async () => {
+    const errors = validate(formData);
+    if (errors) {
+      setShowErrors(true);
+      return;
+    }
+
+    await login(formData);
+  };
+
+  const validation = showErrors ? validate(formData) : undefined;
+
+  if (auth.accessToken) return <Redirect href="/course" />;
 
   return (
     <View style={styles.container}>
       <Logo style={styles.logo} />
       <View style={styles.formContainer}>
-        <Input placeholder="Email" />
-        <Input placeholder="Пароль" isPassword={true} />
+        <Input
+          value={formData.email}
+          onChangeText={(text) => setValue("email", text)}
+          placeholder="Email"
+        />
+        {validation?.properties?.email && (
+          <Text style={styles.error}>
+            {validation?.properties?.email.errors.join("\n")}
+          </Text>
+        )}
+        <Input
+          value={formData.password}
+          onChangeText={(text) => setValue("password", text)}
+          placeholder="Пароль"
+          isPassword
+        />
+        {validation?.properties?.password && (
+          <Text style={styles.error}>
+            {validation?.properties?.password.errors.join("\n")}
+          </Text>
+        )}
         <Button
-          onPress={() => {
-            errorNotificationRef?.current &&
-              errorNotificationRef.current.show(
-                "Ошибка ".concat(Math.random().toFixed(2).toString()),
-              );
-          }}
+          disabled={!!validation}
+          pending={auth.isLoading}
+          onPress={submit}
           title="Войти"
         />
       </View>
@@ -35,14 +109,6 @@ export default function Login() {
       <Link href="/restore" asChild>
         <Button title="Восстановить пароль" asLink={true} />
       </Link>
-      {/* <Pressable style={styles.restorePasswordButton}>
-        <Text style={styles.restorePasswordButtonText}>
-          Восстановить пароль
-        </Text>
-      </Pressable> */}
-      {/* <Modal visible={visible} onClose={() => setVisible((state) => !state)}>
-        <Text>Boob</Text>
-      </Modal> */}
     </View>
   );
 }
@@ -55,6 +121,10 @@ const styles = StyleSheet.create({
     height: "100%",
     gap: 50,
     padding: 55,
+  },
+  error: {
+    color: "red",
+    textAlign: "center",
   },
   formContainer: {
     justifyContent: "center",

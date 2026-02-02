@@ -6,7 +6,7 @@ export default function Restore() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Link href={"/"}>
-        <Text style={{ color: Color.white }}>Index</Text>
+        <Text style={{ color: Color.white }}>Restore</Text>
       </Link>
     </View>
   );

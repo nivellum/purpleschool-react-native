@@ -10,8 +10,8 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Link href={"/logins"}>
-        <Text style={{ color: Color.white }}>{user.profile?.name}</Text>
+      <Link href={"/login"}>
+        <Text style={{ color: Color.white }}>Login</Text>
       </Link>
     </View>
   );
